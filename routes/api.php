@@ -13,11 +13,8 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->group(function () {
-    Route::post('scores', 'ScoreController@store')->name('send_score');
-});
-
 Route::get('scores', 'ScoreController@index')->name('score.list');
+Route::post('scores', 'ScoreController@store')->name('send_score');
 Route::get('daily_scores', 'DailyScoreController@index')->name('daily_score.list');
 Route::get('influencers', 'InfluencerController@index')->name('influencers.list');
 

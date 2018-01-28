@@ -1,11 +1,11 @@
 <?php
 $dbopts = parse_url(getenv('DATABASE_URL'));
 
-$user = $dbopts["user"];
-$password = $dbopts["pass"];
-$host = $dbopts["host"];
-$port = $dbopts["port"];
-$dbname = ltrim($dbopts["path"],'/');
+$user = $dbopts["user"] ?? null;
+$password = $dbopts["pass"] ?? null;
+$host = $dbopts["host"] ?? null;
+$port = $dbopts["port"] ?? null;
+$dbname = ltrim($dbopts["path"],'/') ?? null;
 return [
 
     /*
