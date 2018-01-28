@@ -15,7 +15,7 @@ class ScoreController extends Controller
      */
     public function index()
     {
-        return Score::sortBy('position');
+        return Score::orderBy('position')->get();
     }
 
     /**
@@ -26,7 +26,7 @@ class ScoreController extends Controller
      */
     public function store(Request $request)
     {
-        $scores = Score::sortBy('position');
+        $scores = Score::orderBy('position')->get();
 
         $lowerScores = $scores->filter(function ($x) use ($request) {
             return $x < $request->score;

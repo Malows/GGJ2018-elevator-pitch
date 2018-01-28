@@ -14,7 +14,7 @@ class DailyScoreController extends Controller
      */
     public function index()
     {
-        return DailyScore::sortBy('position');
+        return DailyScore::orderBy('position')->get();
     }
 
     /**
