@@ -32,7 +32,7 @@ class ScoreController extends Controller
             return $x < $request->score;
         });
 
-        if ($lowerScores->isEmpty()) return response();
+        if ($lowerScores->isEmpty()) return response()->json();
 
         $dealed = $this->_deal($lowerScores);
 
