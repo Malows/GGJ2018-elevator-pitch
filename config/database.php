@@ -1,5 +1,13 @@
 <?php
+$dbopts = parse_url(getenv('DATABASE_URL'));
 
+var_dump($dbopts);
+
+$user = $dbopts["user"] ?? null;
+$password = $dbopts["pass"];
+$host = $dbopts["host"];
+$port = $dbopts["port"];
+$dbname = ltrim($dbopts["path"],'/');
 return [
 
     /*
@@ -13,7 +21,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => env('DB_CONNECTION', 'heroku'),
 
     /*
     |--------------------------------------------------------------------------
@@ -76,6 +84,19 @@ return [
             'password' => env('DB_PASSWORD', ''),
             'charset' => 'utf8',
             'prefix' => '',
+        ],
+
+        'heroku' => [
+            'driver' => 'pgsql',
+            'host' => $host,
+            'port' => $port,
+            'database' => $dbname,
+            'username' => $user,
+            'password' => $password,
+            'charset' => 'utf8',
+            'prefix' => '',
+            'schema' => 'public',
+            'sslmode' => 'prefer',
         ],
 
     ],
