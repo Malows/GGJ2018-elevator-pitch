@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Score;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
 class ScoreController extends Controller
@@ -14,17 +15,7 @@ class ScoreController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return Score::sortBy('position');
     }
 
     /**
@@ -35,51 +26,41 @@ class ScoreController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $scores = Score::sortBy('position');
+
+        $lowerScores = $scores->filter(function ($x) use ($request) {
+            return $x < $request->score;
+        });
+
+        if ($lowerScores->isEmpty()) return response();
+
+        $dealed = $this->_deal($lowerScores);
+
+        $newScore = new Score($request->all());
+        $newScore->postition = $dealed['highestPosition'];
+        $newScore->save();
+
+        $dealed['toUpdate']->each(function ($x) { $x->save(); });
+        $dealed['toDelete']->delete();
+
+        return $newScore;
     }
 
     /**
-     * Display the specified resource.
+     * Deal the scores
      *
-     * @param  \App\Score  $score
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Database\Eloquent\Collection
+     * @return array
      */
-    public function show(Score $score)
+    private function _deal(Collection $elements)
     {
-        //
-    }
+        $elements = $elements->sortBy('position');
+        $toUpdate = $elements->take($elements->count() - 1);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Score  $score
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Score $score)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Score  $score
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Score $score)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Score  $score
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Score $score)
-    {
-        //
+        return [
+            'highestPosition' => $elements->first()->position,
+            'toUpdate' => $toUpdate->map(function ($x) { $x->position += 1; return $x; }),
+            'toDelete' => $elements->last()
+        ];
     }
 }
