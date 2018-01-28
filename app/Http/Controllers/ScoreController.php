@@ -29,22 +29,10 @@ class ScoreController extends Controller
      */
     public function store(Request $request)
     {
-        $scores = Score::orderBy('position')->get();
-
-        $lowerScores = $scores->filter(function ($x) use ($request) {
-            return $x < $request->score;
-        });
-
-        if ($lowerScores->isEmpty()) return response()->json();
-
-        $dealed = $this->_deal($lowerScores);
-
-        $newScore = new Score($request->all());
-        $newScore->postition = $dealed['highestPosition'];
-        $newScore->save();
-
-        $dealed['toUpdate']->each(function ($x) { $x->save(); });
-        $dealed['toDelete']->delete();
+        $scores = $this->agregar_y_ordenar(
+            Score::orderBy('score', 'desc')->get(),
+            $request
+        );
 
         // daily section
         $this->handleDailyScore($request);
@@ -52,26 +40,10 @@ class ScoreController extends Controller
         // check the influencer
         $this->handleInfluencer($request);
 
-        return $newScore;
+        return $scores;
     }
 
-    /**
-     * Deal the scores
-     *
-     * @param  \Illuminate\Database\Eloquent\Collection
-     * @return array
-     */
-    private function _deal(Collection $elements)
-    {
-        $elements = $elements->sortBy('position');
-        $toUpdate = $elements->take($elements->count() - 1);
 
-        return [
-            'highestPosition' => $elements->first()->position,
-            'toUpdate' => $toUpdate->map(function ($x) { $x->position += 1; return $x; }),
-            'toDelete' => $elements->last()
-        ];
-    }
 
     private function handleInfluencer(Request $request)
     {
@@ -79,6 +51,7 @@ class ScoreController extends Controller
         if ($influencer->score < $request->score) {
             $influencer->score = $request->score;
             $influencer->player = $request->player;
+            $influencer->save();
         }
     }
 
@@ -100,11 +73,33 @@ class ScoreController extends Controller
     {
         $yesterday = Carbon::now()->subHours(24);
         DailyScore::where('created_at', '<', $yesterday)->delete();
+
     }
 
     private function updateDailysPosition()
     {
-        $dailys = DailyScore::orderBy('score')->get();
-        $dailys->each(function ($x, $key) { $x->position = $key + 1; $x->save(); });
+        $dailys = DailyScore::orderBy('score'. 'desc')->get();
+        $dailys->each(function ($x, $key) { $x->position = $key; $x->save(); });
+        if ($dailys->count() > 20) {
+            $dailys = $dailys->sortByDesc('score');
+            $dailys->slice(20)->each(function ($x) { $x->delete(); });
+        }
+    }
+
+    private function agregar_y_ordenar(Collection $elements, Request $request)
+    {
+        $newScore = new Score($request->all());
+        $newScore->position = 0;
+
+        $elements->add($newScore);
+        $elements = $elements->sortByDesc('score');
+
+        $buenos = $elements->slice(0, 20);
+        $buenos = $buenos->each(function ($x, $key) { $x->position = $key; $x->save(); });
+
+        $malos = $elements->slice(20)->pluck('id');
+        if (count($malos)) Score::destroy($malos);
+
+        return array_values($buenos->toArray());
     }
 }
