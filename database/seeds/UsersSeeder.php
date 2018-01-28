@@ -4,9 +4,6 @@ use Illuminate\Database\Seeder;
 
 class UsersSeeder extends Seeder
 {
-    protected $values = [
-        ['name' => 'Hideo Kojima', 'score' => 0, 'player' => '']
-    ];
     /**
      * Run the database seeds.
      *
@@ -14,6 +11,18 @@ class UsersSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('influencers')->insert($this->values);
+        $values = [
+            [
+                'name' => 'juan',
+                'email' => 'cruz.jm.stafe@gmail.com',
+                'password' => bcrypt('pertennesco')
+            ], [
+                'name' => 'mobile',
+                'email' => 'mobile.app@mail.com',
+                'password' => bcrypt('ggj2018YAY!')
+            ]
+        ];
+
+        DB::table('users')->insert($values);
     }
 }
