@@ -14,7 +14,7 @@ class InfluencerController extends Controller
      */
     public function index()
     {
-        //
+        return Influencer::all();
     }
 
     /**
@@ -30,7 +30,7 @@ class InfluencerController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -41,7 +41,7 @@ class InfluencerController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Influencer  $influencer
+     * @param  \App\Influencer $influencer
      * @return \Illuminate\Http\Response
      */
     public function show(Influencer $influencer)
@@ -52,7 +52,7 @@ class InfluencerController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Influencer  $influencer
+     * @param  \App\Influencer $influencer
      * @return \Illuminate\Http\Response
      */
     public function edit(Influencer $influencer)
@@ -63,8 +63,8 @@ class InfluencerController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Influencer  $influencer
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Influencer $influencer
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Influencer $influencer)
@@ -75,7 +75,7 @@ class InfluencerController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Influencer  $influencer
+     * @param  \App\Influencer $influencer
      * @return \Illuminate\Http\Response
      */
     public function destroy(Influencer $influencer)
