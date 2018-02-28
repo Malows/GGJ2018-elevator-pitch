@@ -88,14 +88,26 @@ class ScoreController extends Controller
 
     private function agregar_y_ordenar(Collection $elements, Request $request)
     {
+        dump($elements);
+
         $newScore = new Score($request->all());
         $newScore->position = 0;
+
+        dump($newScore);
 
         $elements->add($newScore);
         $elements = $elements->sortByDesc('score');
 
+        dump($elements);
+
         $buenos = $elements->slice(0, 20);
-        $buenos = $buenos->each(function ($x, $key) { $x->position = $key; $x->save(); });
+
+        dump($buenos);
+
+        $buenos = $buenos->each(function ($x, $key) {
+            $x->position = $key;
+            $x->save();
+        });
 
         $malos = $elements->slice(20)->pluck('id');
         if (count($malos)) Score::destroy($malos);
