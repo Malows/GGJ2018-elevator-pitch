@@ -29,8 +29,10 @@ class ScoreController extends Controller
      */
     public function store(Request $request)
     {
+        dd($request);
+        $elems = Score::orderBy('score', 'desc')->get();
         $scores = $this->agregar_y_ordenar(
-            Score::orderBy('score', 'desc')->get(),
+            $elems,
             $request
         );
 
