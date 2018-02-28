@@ -88,7 +88,7 @@ class ScoreController extends Controller
 
     private function agregar_y_ordenar(Collection $elements, Request $request)
     {
-        dump($elements);
+        dd($elements);
 
         $newScore = new Score($request->all());
         $newScore->position = 0;
